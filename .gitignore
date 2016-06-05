@@ -1,0 +1,7 @@
+.idea
+.DS_Store
+node_modules/
+npm-debug.log
+todo.txt
+dist
+es5
