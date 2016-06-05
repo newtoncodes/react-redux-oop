@@ -10,7 +10,6 @@ Functional programming is very popular right now among web and mobile frontend d
 
 `npm install --save react-redux-oop`
 
-The project defaults to ES6, so if you don't use Babel you will have to import react-redux-oop/es5 directory.
 The UMD build is in the dist directory.
 
 ## Description

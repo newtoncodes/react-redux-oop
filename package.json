@@ -1,8 +1,8 @@
 {
   "name": "react-redux-oop",
   "description": "An OOP implementation of redux and react.",
-  "version": "1.0.1",
-  "main": "./src/index.js",
+  "version": "1.0.2",
+  "main": "./es5/index.js",
   "scripts": {
     "build:es5": "babel src --out-dir es5",
     "build:umd": "cross-env NODE_ENV=development webpack --config ./webpack.config.prod.js src/index.js dist/react-redux-oop.js",
