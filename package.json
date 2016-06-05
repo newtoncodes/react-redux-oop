@@ -1,7 +1,7 @@
 {
   "name": "react-redux-oop",
   "description": "An OOP implementation of redux and react.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "./src/index.js",
   "scripts": {
     "build:es5": "babel src --out-dir es5",
@@ -36,11 +36,12 @@
   ],
   "dependencies": {
     "eventemitter3": "^1.2.0",
-    "react": "^15.1.0",
-    "react-dom": "^15.1.0",
-    "react-redux": "^4.4.5",
-    "redux": "^3.5.2",
     "seamless-immutable": "^6.1.0"
+  },
+  "peerDependencies": {
+    "react-redux": "^4.0.0",
+    "react": "^0.14.0 || ^15.0.0-0",
+    "redux": "^2.0.0 || ^3.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",
