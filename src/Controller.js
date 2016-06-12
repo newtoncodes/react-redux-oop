@@ -6,20 +6,17 @@
  */
 class Controller {
     /**
-     * @param {function} [dispatch]
+     * @param {Store} [store]
      */
-    constructor(dispatch) {
-        this.provideDispatch(dispatch);
+    constructor(store) {
+        this._store = store || null;
     }
 
     /**
-     * @param {function} dispatch
+     * @param {Store} store
      */
-    provideDispatch(dispatch) {
-        this.dispatch = (type, data = {}) => {
-            if (!dispatch) throw new Error('Dispatch not set.');
-            setTimeout(() => dispatch(Object.assign({type}, data), 0));
-        };
+    attachTo(store) {
+        this._store = store;
     }
 
     //noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
@@ -29,7 +26,24 @@ class Controller {
      * @protected
      */
     dispatch(type, data = {}) {
-        throw new Error('Dispatch not set.');
+        if (!this._store) throw new Error('Store not set.');
+        setTimeout(() => this._store.dispatch(Object.assign({type}, data), 0));
+    }
+
+    /**
+     * @returns {Object}
+     */
+    getState() {
+        if (!this._store) throw new Error('Store not set.');
+        return this._store.getState();
+    }
+
+    /**
+     * @returns {Object}
+     */
+    get state() {
+        if (!this._store) throw new Error('Store not set.');
+        return this._store.getState();
     }
 }
 

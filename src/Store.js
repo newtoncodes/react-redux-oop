@@ -37,6 +37,7 @@ class Store extends EventEmitter {
         this._store = Redux.createStore(this._reducer.bind(this), Immutable(state || {}), this._enhancer);
         this._store.subscribe(() => this.emit('state', this._store.getState()));
         this.dispatch = this._store.dispatch.bind(this._store);
+        this.getState = this._store.getState.bind(this._store);
     }
 
     /**

@@ -76,10 +76,14 @@ This "abstract" class is used to remove the need of action creators. **It combin
 
 ```typescript
 class Controller {
-    constructor(dispatch: function) {}
+    constructor(store: Object|Store) {}
     
-    provideDispatch(dispatch: function) {}
+    attachTo(store: Object|Store) {}
+    
     dispatch(type: string, data: Object = {}) {}
+    getState(): Object {}
+    
+    get state(): Object {}
 }
 ```
 
@@ -240,7 +244,7 @@ app
 
 // We can just create a controller and execute new actions.
 
-let controller = new TodoController(app.store.dispatch);
+let controller = new TodoController(app.store);
 controller.addItem('Have something to eat.');
 controller.addItem('Have something to drink.');
 controller.addItem('Sleep.');

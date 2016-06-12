@@ -20,10 +20,13 @@ class Container extends React.Component {
         return ReactRedux.connect(
             (state) => {
                 let mapper = this['mapper'];
-                return mapper ? mapper(state) : {};
-            },
+                let result = mapper ? mapper(state) : {};
+                result['_state'] = state;
 
-            (dispatch) => {return {_dispatch: dispatch}}
+                return result;
+            }
+
+            //(dispatch) => {return {_dispatch: dispatch}}
 
             // (stateProps, dispatchProps, ownProps) => {
             //     return {
@@ -37,19 +40,16 @@ class Container extends React.Component {
 
     /**
      * @param {Object} props
+     * @param {Object} context
      */
-    constructor(props) {
+    constructor(props, context) {
         super(props);
+
+        this._store = context.store;
 
         if (!this.constructor.__connected) throw new Error('The Container class ' + this.constructor.name + ' is not connected.');
 
-        this._dispatch = props._dispatch;
-
-        /**
-         * @type {Object|Controller}
-         * @private
-         */
-        this._actions = {};
+        if (this._actions) _mapStore(this._actions, this._store);
     }
 
     /**
@@ -67,10 +67,10 @@ class Container extends React.Component {
 
     /**
      * @param {Object} props
+     * @param {Object} context
      */
-    componentWillReceiveProps(props) {
-        this._dispatch = props._dispatch;
-        _mapDispatch(this._actions, this._dispatch);
+    componentWillReceiveProps(props, context) {
+        _mapStore(this._actions, context.store);
     }
 
     /**
@@ -78,7 +78,7 @@ class Container extends React.Component {
      * @param {Object} data
      */
     dispatch(type, data) {
-        this.props._dispatch(Object.assign({type}, data));
+        this._store.dispatch(Object.assign({type}, data));
     }
 
     /**
@@ -86,7 +86,7 @@ class Container extends React.Component {
      * @private
      */
     get actions() {
-        return this._actions;
+        return this._actions || {};
     }
 
     /**
@@ -95,19 +95,21 @@ class Container extends React.Component {
      */
     set actions(actions) {
         this._actions = actions || {};
-        _mapDispatch(this._actions, this._dispatch);
+        if (this._store) _mapStore(this._actions, this._store);
     }
 }
 
+Container.contextTypes = {
+    store: React.PropTypes.object
+};
 
-function _mapDispatch(actions, dispatch, state) {
-    if (actions instanceof Controller) {
-        actions.provideDispatch(dispatch);
-    }
+
+function _mapStore(actions, store) {
+    if (actions instanceof Controller) actions.attachTo(store);
 
     Object.keys(actions).forEach(key => {
         let action = actions[key];
-        if (typeof action === 'object') _mapDispatch(action, dispatch, state);
+        if (typeof action === 'object') _mapStore(action, store);
     });
 }
 
