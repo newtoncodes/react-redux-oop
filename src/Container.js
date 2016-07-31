@@ -20,10 +20,9 @@ class Container extends React.Component {
         return ReactRedux.connect(
             (state) => {
                 let mapper = this['mapper'];
-                let result = mapper ? mapper(state) : {};
-                result['_state'] = state;
-
-                return result;
+                //let result = mapper ? mapper(state) : {};
+                //result['_state'] = state;
+                return mapper ? mapper(state) : {};
             }
 
             //(dispatch) => {return {_dispatch: dispatch}}
@@ -38,6 +37,10 @@ class Container extends React.Component {
         )(this);
     }
 
+    static mapper() {
+        return {};
+    }
+
     /**
      * @param {Object} props
      * @param {Object} context
@@ -49,7 +52,8 @@ class Container extends React.Component {
 
         if (!this.constructor.__connected) throw new Error('The Container class ' + this.constructor.name + ' is not connected.');
 
-        if (this._actions) _mapStore(this._actions, this._store);
+        this._actions = this._actions || {};
+        _mapStore(this._actions, this._store);
     }
 
     /**
@@ -83,7 +87,6 @@ class Container extends React.Component {
 
     /**
      * @returns {Object|Controller}
-     * @private
      */
     get actions() {
         return this._actions || {};
@@ -91,10 +94,9 @@ class Container extends React.Component {
 
     /**
      * @param {Object|Controller} actions
-     * @private
      */
     set actions(actions) {
-        this._actions = actions || {};
+        this._actions = Object.assign(this._actions || {}, actions || {});
         if (this._store) _mapStore(this._actions, this._store);
     }
 }
@@ -109,7 +111,7 @@ function _mapStore(actions, store) {
 
     Object.keys(actions).forEach(key => {
         let action = actions[key];
-        if (typeof action === 'object') _mapStore(action, store);
+        if (action && (typeof action === 'object') && !Array.isArray(action)) _mapStore(action, store);
     });
 }
 

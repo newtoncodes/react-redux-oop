@@ -10,6 +10,12 @@ class Controller {
      */
     constructor(store) {
         this._store = store || null;
+
+        Object.getOwnPropertyNames(Object.getPrototypeOf(this)).forEach(name => {
+            if (name === 'constructor') return;
+            if (!this[name] || (typeof this[name] !== 'function')) return;
+            this[name] = this[name].bind(this);
+        });
     }
 
     /**
@@ -27,7 +33,7 @@ class Controller {
      */
     dispatch(type, data = {}) {
         if (!this._store) throw new Error('Store not set.');
-        setTimeout(() => this._store.dispatch(Object.assign({type}, data), 0));
+        this._store.dispatch(Object.assign({type}, data));
     }
 
     /**
