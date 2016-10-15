@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>React-Redux OOP by newtoncodes</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>React-Redux OOP</h1>
+        <p>OOP implementation of redux and react.</p>
+
+        <p class="view"><a href="https://github.com/newtoncodes/react-redux-oop">View the Project on GitHub <small>newtoncodes/react-redux-oop</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/newtoncodes/react-redux-oop/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/newtoncodes/react-redux-oop/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/newtoncodes/react-redux-oop">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="react-redux-oop" class="anchor" href="#react-redux-oop" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>react-redux-oop</h1>
+
+<p>OOP implementation of redux and react.</p>
+
+<h2>
+<a id="motivation" class="anchor" href="#motivation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Motivation</h2>
+
+<p>Functional programming is very popular right now among web and mobile frontend developers. It's a cool way of doing things but in my opinion it's never black and white. It's a good paradigm and developers can learn a hell lot out of it but I personally don't like they apps are being organized. I just like many developers don't like plain functions in hundreds lowercase files. I like the class structure, because it eases reading and understanding the code a lot. I believe this implementation of redux and react can be helpful for bigger applications.</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p><code>npm install --save react-redux-oop</code></p>
+
+<p>The UMD build is in the dist directory.</p>
+
+<h2>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Description</h2>
+
+<p>This is just an implementation of react and redux. It uses plain <code>react</code>, <code>redux</code> and <code>react-redux</code>.  No functionality is changed or added to these libraries. It's only a way to organize your app with a bunch of helpful classes. Also it solves the problem with multiple stores and binded action creators.</p>
+
+<h4>
+<a id="store" class="anchor" href="#store" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Store</h4>
+
+<p>This is a wrapper of the redux store. It's purpose is to be able to easily enable and disable reducers without too much function composition. Also <strong>splits reducers by actions and store path</strong>, instead of just store path. The store requires the usage of <a href="https://github.com/rtfeldman/seamless-immutable">seamless-immutable</a>. It will automatically force it onto your state objects. It also extends <a href="https://github.com/primus/eventemitter3">eventemitter3</a>.</p>
+
+<div class="highlight highlight-source-ts"><pre><span class="pl-k">class</span> <span class="pl-en">Store</span> <span class="pl-k">extends</span> <span class="pl-c1">EventEmitter</span> {
+    <span class="pl-k">constructor</span>(<span class="pl-v">state</span>: Object, <span class="pl-v">enhancer</span>: function) {}
+
+    <span class="pl-en">addReducer</span>(<span class="pl-v">action</span>: <span class="pl-c1">string</span>, <span class="pl-v">path</span>: <span class="pl-c1">string</span>, <span class="pl-v">reducer</span>: function) {}
+    <span class="pl-en">removeReducer</span>(<span class="pl-v">action</span>: <span class="pl-c1">string</span>, <span class="pl-v">path</span>: <span class="pl-c1">string</span>, <span class="pl-v">reducer</span>: function) {}
+    <span class="pl-en">addReducers</span>(<span class="pl-v">reducers</span>: Object) {}
+    <span class="pl-en">removeReducers</span>(<span class="pl-v">reducers</span>: Object) {}
+
+    <span class="pl-k">get</span> <span class="pl-en">state</span>(): Object {}
+    <span class="pl-k">get</span> <span class="pl-en">reduxStore</span>(): Object {}
+}</pre></div>
+
+<h5>
+<a id="reducers" class="anchor" href="#reducers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Reducers</h5>
+
+<p>Reducers in the Store are added either as a single reducer or as an object of this format:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-smi">store</span>.<span class="pl-en">addReducers</span>({
+    <span class="pl-s"><span class="pl-pds">'</span>ADD_ITEM<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-s"><span class="pl-pds">'</span>todo<span class="pl-pds">'</span></span><span class="pl-k">:</span> [
+            (<span class="pl-smi">state</span> <span class="pl-k">=</span> {lastId<span class="pl-k">:</span> <span class="pl-c1">0</span>, items<span class="pl-k">:</span> {}}, <span class="pl-smi">action</span>) <span class="pl-k">=&gt;</span> {
+                <span class="pl-c">// Do the job</span>
+            },
+            (<span class="pl-smi">state</span> <span class="pl-k">=</span> {lastId<span class="pl-k">:</span> <span class="pl-c1">0</span>, items<span class="pl-k">:</span> {}}, <span class="pl-smi">action</span>) <span class="pl-k">=&gt;</span> {
+                <span class="pl-c">// Another reducer for the same action and state.</span>
+            }
+        ]
+    },
+
+    <span class="pl-s"><span class="pl-pds">'</span>REMOVE_ITEM<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-s"><span class="pl-pds">'</span>todo.items<span class="pl-pds">'</span></span><span class="pl-k">:</span> [
+            (<span class="pl-smi">state</span> <span class="pl-k">=</span> {}, <span class="pl-smi">action</span>) <span class="pl-k">=&gt;</span> {
+                <span class="pl-c">// Do the job</span>
+            }
+        ]
+    },
+
+    <span class="pl-c">// or you can use wildcards '*' meaning all actions or the full state:</span>
+    <span class="pl-s"><span class="pl-pds">'</span>*<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-s"><span class="pl-pds">'</span>*<span class="pl-pds">'</span></span><span class="pl-k">:</span> [
+            (<span class="pl-smi">state</span> <span class="pl-k">=</span> {}, <span class="pl-smi">action</span>) <span class="pl-k">=&gt;</span> {
+                <span class="pl-c">// Do the job</span>
+            }
+        ]
+    }
+});</pre></div>
+
+<h4>
+<a id="controller" class="anchor" href="#controller" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Controller</h4>
+
+<p>This "abstract" class is used to remove the need of action creators. <strong>It combines dispatching with creating the action</strong>. Every controller is provided with the store's dispatch. It also works on the server, because you can create multiple controllers with different stores. Action creators cannot be binded to the dispatch, because the store changes on the server and they are just functions, but controllers can, because they have context.</p>
+
+<div class="highlight highlight-source-ts"><pre><span class="pl-k">class</span> <span class="pl-en">Controller</span> {
+    <span class="pl-k">constructor</span>(<span class="pl-v">store</span>: Object<span class="pl-k">|</span>Store) {}
+
+    <span class="pl-en">attachTo</span>(<span class="pl-v">store</span>: Object<span class="pl-k">|</span>Store) {}
+
+    <span class="pl-en">dispatch</span>(<span class="pl-v">type</span>: <span class="pl-c1">string</span>, <span class="pl-v">data</span>: Object <span class="pl-k">=</span> {}) {}
+    <span class="pl-en">getState</span>(): Object {}
+
+    <span class="pl-k">get</span> <span class="pl-en">state</span>(): Object {}
+}</pre></div>
+
+<h4>
+<a id="container" class="anchor" href="#container" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Container</h4>
+
+<p>This is an "abstract" extension to the React.Component class. It uses react-redux to connect to the store but used a different syntax and flow to utilize the dispatch method. Every Container component can set an <code>actions</code> object of Controllers which are automatically provided with the store from react-redux'es Provider. <strong>Containers are always treated as pure</strong>.</p>
+
+<div class="highlight highlight-source-ts"><pre><span class="pl-k">class</span> <span class="pl-en">Container</span> <span class="pl-k">extends</span> <span class="pl-c1">React</span>.<span class="pl-c1">Component</span> {
+    <span class="pl-k">static</span> <span class="pl-en">connect</span>() {}
+    <span class="pl-k">constructor</span>(<span class="pl-v">props</span>: Object) {}
+    <span class="pl-en">dispatch</span>(<span class="pl-v">type</span>: <span class="pl-c1">string</span>, <span class="pl-v">data</span>: Object) {}
+}</pre></div>
+
+<h4>
+<a id="app" class="anchor" href="#app" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>App</h4>
+
+<div class="highlight highlight-source-ts"><pre><span class="pl-k">class</span> <span class="pl-en">App</span> {
+    <span class="pl-k">constructor</span>(<span class="pl-v">state</span>: Object <span class="pl-k">=</span> {}, <span class="pl-v">middlewares</span>: Array.&lt;function&gt; <span class="pl-k">=</span> [], <span class="pl-v">enhancers</span>: Array.&lt;function&gt; <span class="pl-k">=</span> []) {}
+
+    <span class="pl-en">configure</span>(<span class="pl-v">state</span>: Object <span class="pl-k">=</span> {}) {}
+    <span class="pl-en">renderTo</span>(<span class="pl-v">node</span>: HTMLElement) {}
+    <span class="pl-en">renderHtml</span>() {}
+    <span class="pl-en">renderStaticHtml</span>() {}
+
+    <span class="pl-en">_addMiddleware</span>(<span class="pl-v">middleware</span>, <span class="pl-v">index</span> <span class="pl-k">=</span> <span class="pl-c1">null</span>) {}
+    <span class="pl-en">_addEnhancer</span>(<span class="pl-v">enhancer</span>: function, <span class="pl-v">index</span>: <span class="pl-c1">number</span> <span class="pl-k">=</span> <span class="pl-c1">null</span>) {}
+    <span class="pl-en">_createStore</span>(<span class="pl-v">state</span>:Object <span class="pl-k">=</span> {}) {}
+    <span class="pl-en">_render</span>() {}
+
+    <span class="pl-k">get</span> <span class="pl-en">store</span>(): Store {}
+}</pre></div>
+
+<p>An "abstract" facade class for your application. It's supposed to be extended with custom functionality. It only has a <strong>bootstrapping function</strong> and <strong>may not be used at all</strong> if you don't like it.</p>
+
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example</h2>
+
+<p>There is a todo example in the example directory. It shows the full usage. Here is the basic idea:</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">class</span> <span class="pl-en">TodoController</span> <span class="pl-k">extends</span> <span class="pl-e">Controller</span> {
+    <span class="pl-en">addTodo</span>(<span class="pl-smi">text</span>) {
+        <span class="pl-v">this</span>.<span class="pl-en">dispatch</span>(<span class="pl-s"><span class="pl-pds">'</span>ADD_TODO<span class="pl-pds">'</span></span>, {text});
+    }
+
+    <span class="pl-en">removeTodo</span>() {
+        <span class="pl-v">this</span>.<span class="pl-en">dispatch</span>(<span class="pl-s"><span class="pl-pds">'</span>ADD_TODO<span class="pl-pds">'</span></span>, {text});
+    }
+
+    <span class="pl-en">asyncAction</span>() {
+        <span class="pl-v">this</span>.<span class="pl-en">dispatch</span>(<span class="pl-s"><span class="pl-pds">'</span>ASYNC_START<span class="pl-pds">'</span></span>);
+        <span class="pl-c1">setTimeout</span>(() <span class="pl-k">=&gt;</span> <span class="pl-v">this</span>.<span class="pl-en">dispatch</span>(<span class="pl-s"><span class="pl-pds">'</span>ASYNC_COMPLETE<span class="pl-pds">'</span></span>), <span class="pl-c1">1000</span>);
+    }
+}
+
+<span class="pl-k">const</span> <span class="pl-c1">TodoReducers</span> <span class="pl-k">=</span> {
+    <span class="pl-s"><span class="pl-pds">'</span>ADD_TODO<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-s"><span class="pl-pds">'</span>todo<span class="pl-pds">'</span></span><span class="pl-k">:</span> [
+            (<span class="pl-smi">state</span> <span class="pl-k">=</span> {lastId<span class="pl-k">:</span> <span class="pl-c1">0</span>, items<span class="pl-k">:</span> {}}, <span class="pl-smi">action</span>) <span class="pl-k">=&gt;</span> {
+                <span class="pl-k">let</span> newId <span class="pl-k">=</span> <span class="pl-smi">state</span>.<span class="pl-smi">lastId</span> <span class="pl-k">+</span> <span class="pl-c1">1</span>;
+
+                <span class="pl-k">return</span> {
+                    lastId<span class="pl-k">:</span> newId,
+                    items<span class="pl-k">:</span> <span class="pl-smi">state</span>.<span class="pl-smi">items</span>.<span class="pl-en">merge</span>({
+                        [newId]<span class="pl-k">:</span> {text<span class="pl-k">:</span> <span class="pl-smi">action</span>.<span class="pl-c1">text</span>, checked<span class="pl-k">:</span> <span class="pl-c1">false</span>}
+                    })
+                }
+            }
+        ]
+    },
+
+    <span class="pl-s"><span class="pl-pds">'</span>REMOVE_TODO<span class="pl-pds">'</span></span><span class="pl-k">:</span> {
+        <span class="pl-s"><span class="pl-pds">'</span>todo.items<span class="pl-pds">'</span></span><span class="pl-k">:</span> [
+            (<span class="pl-smi">state</span> <span class="pl-k">=</span> {}, <span class="pl-smi">action</span>) <span class="pl-k">=&gt;</span> <span class="pl-smi">state</span>.<span class="pl-en">without</span>(<span class="pl-smi">action</span>.<span class="pl-c1">id</span>)
+        ]
+    }
+}
+
+<span class="pl-k">class</span> <span class="pl-en">TodoContainer</span> <span class="pl-k">extends</span> <span class="pl-e">Container</span> {
+    <span class="pl-c">// This is mapStateToProps from react-redux</span>
+    <span class="pl-k">static</span> <span class="pl-en">mapper</span>(<span class="pl-smi">state</span>) {
+        <span class="pl-k">return</span> {
+            items<span class="pl-k">:</span> <span class="pl-smi">state</span>.<span class="pl-smi">todo</span>.<span class="pl-smi">items</span>
+        };
+    }
+
+    <span class="pl-c">// Actions can be defined this way:</span>
+    actions <span class="pl-k">=</span> {
+        todo<span class="pl-k">:</span> <span class="pl-k">new</span> <span class="pl-en">TodoController</span>(),
+        another<span class="pl-k">:</span> <span class="pl-k">new</span> <span class="pl-en">AnotherConroller</span>();
+    }
+
+    <span class="pl-c">// or this way:</span>
+    actions <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">TodoController</span>();
+
+    <span class="pl-en">render</span>() {
+        <span class="pl-k">return</span> (
+            <span class="pl-k">&lt;</span>TodoList
+                items<span class="pl-k">=</span>{<span class="pl-v">this</span>.<span class="pl-smi">props</span>.<span class="pl-smi">items</span>}
+                onAdd<span class="pl-k">=</span>{<span class="pl-smi">text</span> <span class="pl-k">=&gt;</span> <span class="pl-v">this</span>.<span class="pl-smi">actions</span>.<span class="pl-en">addTodo</span>(text)}
+                onRemove<span class="pl-k">=</span>{<span class="pl-smi">id</span> <span class="pl-k">=&gt;</span> <span class="pl-v">this</span>.<span class="pl-smi">actions</span>.<span class="pl-en">removeTodo</span>(id)}
+            <span class="pl-k">/</span><span class="pl-k">&gt;</span>
+        );
+    }
+}
+
+TodoContainer <span class="pl-k">=</span> <span class="pl-smi">TodoContainer</span>.<span class="pl-en">connect</span>();
+
+
+<span class="pl-k">class</span> <span class="pl-en">ExampleApp</span> <span class="pl-k">extends</span> <span class="pl-e">App</span> {
+    <span class="pl-en">constructor</span>() {
+        <span class="pl-v">super</span>({
+            todo<span class="pl-k">:</span> {
+                lastId<span class="pl-k">:</span> <span class="pl-c1">0</span>,
+                items<span class="pl-k">:</span> {}
+            }
+        });
+
+        <span class="pl-k">if</span> (<span class="pl-c1">process</span>.<span class="pl-smi">env</span>.<span class="pl-c1">NODE_ENV</span> <span class="pl-k">!==</span> <span class="pl-s"><span class="pl-pds">'</span>production<span class="pl-pds">'</span></span>) {
+            <span class="pl-v">this</span>.<span class="pl-en">_addMiddleware</span>(<span class="pl-c1">require</span>(<span class="pl-s"><span class="pl-pds">'</span>redux-logger<span class="pl-pds">'</span></span>)());
+
+            <span class="pl-k">let</span> matches <span class="pl-k">=</span> <span class="pl-c1">window</span>.<span class="pl-c1">location</span>.<span class="pl-c1">href</span>.<span class="pl-c1">match</span>(<span class="pl-sr"><span class="pl-pds">/</span><span class="pl-c1">[?&amp;]</span>_debug=(<span class="pl-c1">[<span class="pl-k">^</span>&amp;]</span><span class="pl-k">+</span>)<span class="pl-k">\b</span><span class="pl-pds">/</span></span>);
+            <span class="pl-k">let</span> session <span class="pl-k">=</span> (matches <span class="pl-k">&amp;&amp;</span> <span class="pl-smi">matches</span>.<span class="pl-c1">length</span>) <span class="pl-k">?</span> matches[<span class="pl-c1">1</span>] <span class="pl-k">:</span> <span class="pl-c1">null</span>;
+
+            <span class="pl-k">let</span> devTools <span class="pl-k">=</span> <span class="pl-c1">null</span>;
+            <span class="pl-k">if</span> (<span class="pl-c1">window</span>[<span class="pl-s"><span class="pl-pds">'</span>devToolsExtension<span class="pl-pds">'</span></span>]) devTools <span class="pl-k">=</span> <span class="pl-c1">window</span>[<span class="pl-s"><span class="pl-pds">'</span>devToolsExtension<span class="pl-pds">'</span></span>]();
+
+            <span class="pl-k">if</span> (devTools) <span class="pl-v">this</span>.<span class="pl-en">_addEnhancer</span>(devTools);
+        }
+    }
+
+    <span class="pl-en">_render</span>() {
+        <span class="pl-k">return</span> (
+            <span class="pl-k">&lt;</span>div<span class="pl-k">&gt;</span>
+                <span class="pl-k">&lt;</span>TodoContainer <span class="pl-k">/</span><span class="pl-k">&gt;</span>
+            <span class="pl-k">&lt;</span><span class="pl-k">/</span>div<span class="pl-k">&gt;</span>
+        );
+    };
+
+    <span class="pl-en">_createStore</span>() {
+        <span class="pl-k">let</span> store <span class="pl-k">=</span> <span class="pl-v">super</span>.<span class="pl-en">_createStore</span>();
+        <span class="pl-smi">store</span>.<span class="pl-en">addReducers</span>(TodoReducers);
+        <span class="pl-k">return</span> store;
+    }
+}
+
+
+<span class="pl-c">// Create an app and append it to the DOM</span>
+
+<span class="pl-k">const</span> <span class="pl-c1">app</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">ExampleApp</span>();
+
+app
+  .<span class="pl-en">configure</span>({<span class="pl-c">/* Change initial state, maybe from server or something. */</span>})
+  .<span class="pl-en">renderTo</span>(<span class="pl-c1">document</span>.<span class="pl-c1">getElementById</span>(<span class="pl-s"><span class="pl-pds">'</span>app<span class="pl-pds">'</span></span>));
+
+<span class="pl-c">// We can just create a controller and execute new actions.</span>
+
+<span class="pl-k">let</span> controller <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">TodoController</span>(<span class="pl-smi">app</span>.<span class="pl-smi">store</span>);
+<span class="pl-smi">controller</span>.<span class="pl-en">addItem</span>(<span class="pl-s"><span class="pl-pds">'</span>Have something to eat.<span class="pl-pds">'</span></span>);
+<span class="pl-smi">controller</span>.<span class="pl-en">addItem</span>(<span class="pl-s"><span class="pl-pds">'</span>Have something to drink.<span class="pl-pds">'</span></span>);
+<span class="pl-smi">controller</span>.<span class="pl-en">addItem</span>(<span class="pl-s"><span class="pl-pds">'</span>Sleep.<span class="pl-pds">'</span></span>);</pre></div>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/newtoncodes">newtoncodes</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
