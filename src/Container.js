@@ -20,20 +20,8 @@ class Container extends React.Component {
         return ReactRedux.connect(
             (state) => {
                 let mapper = this['mapper'];
-                //let result = mapper ? mapper(state) : {};
-                //result['_state'] = state;
                 return mapper ? mapper(state) : {};
             }
-
-            //(dispatch) => {return {_dispatch: dispatch}}
-
-            // (stateProps, dispatchProps, ownProps) => {
-            //     return {
-            //         ...ownProps,
-            //         ...stateProps,
-            //         ...dispatchProps
-            //     };
-            // }
         )(this);
     }
 
@@ -74,6 +62,7 @@ class Container extends React.Component {
      * @param {Object} context
      */
     componentWillReceiveProps(props, context) {
+        this._store = context.store;
         _mapStore(this._actions, context.store);
     }
 

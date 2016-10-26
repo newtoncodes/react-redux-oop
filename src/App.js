@@ -12,12 +12,14 @@ const Store = require('./Store');
 
 /**
  * Base app class
+ * @deprecated
  */
 class App {
     /**
      * @param {Object} [state]
      * @param {Array.<function>} [middlewares]
      * @param {Array.<function>} [enhancers]
+     * @deprecated
      */
     constructor(state = {}, middlewares = [], enhancers = []) {
         /**
@@ -60,6 +62,7 @@ class App {
     /**
      * @param {Object} [state]
      * @returns {App}
+     * @deprecated
      */
     configure(state = {}) {
         this._store = this._createStore(state);
@@ -73,7 +76,7 @@ class App {
      */
     renderTo(node) {
         ReactDOM.render(React.createElement(Provider, {
-            store: this._store.reduxStore,
+            store: this._store,
             children: React.createElement(this._render)
         }), node);
 
@@ -87,7 +90,7 @@ class App {
         if (!this._store) throw new Error('The App is not configured.');
 
         return ReactDOMServer.renderToString(React.createElement(Provider, {
-            store: this._store.reduxStore,
+            store: this._store,
             children: React.createElement(this._render)
         }));
     }
@@ -99,7 +102,7 @@ class App {
         if (!this._store) throw new Error('The App is not configured.');
 
         return ReactDOMServer.renderToStaticMarkup(React.createElement(Provider, {
-            store: this._store.reduxStore,
+            store: this._store,
             children: React.createElement(this._render)
         }));
     }
@@ -150,7 +153,7 @@ class App {
      * @protected
      */
     _createStore(state = {}) {
-        return new Store(this._initialState.merge(state || {}, {deep: true}), this._enhancer);
+        return new Store(this._initialState.merge(state || {}, {deep: true}), [], this._enhancer);
     }
 
     /**
