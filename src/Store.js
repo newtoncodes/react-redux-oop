@@ -12,17 +12,36 @@ const Immutable = require('seamless-immutable');
  */
 class Store extends EventEmitter {
     /**
-     * @param {Object} state
-     * @param {function} enhancer
+     * @param {Object} [state]
+     * @param {Array.<function>} [middlewares]
+     * @param {Array.<function>} [enhancers]
      */
-    constructor(state, enhancer) {
+    constructor(state = {}, middlewares = [], enhancers = []) {
         super();
+
+        /**
+         * @type {Array.<function>}
+         * @private
+         */
+        this._middlewares = middlewares;
 
         /**
          * @type {function}
          * @private
          */
-        this._enhancer = enhancer;
+        this._middleware = Redux.applyMiddleware(...this._middlewares);
+
+        /**
+         * @type {Array.<function>}
+         * @private
+         */
+        this._enhancers = enhancers;
+
+        /**
+         * @type {function}
+         * @private
+         */
+        this._enhancer = Redux.compose(this._middleware, ...this._enhancers);
 
         /**
          * @type {Object.<string,Object.<string,Array.<function>>>}
@@ -35,9 +54,34 @@ class Store extends EventEmitter {
          * @private
          */
         this._store = Redux.createStore(this._reducer.bind(this), Immutable(state || {}), this._enhancer);
-        this._store.subscribe(() => this.emit('state', this._store.getState()));
-        this.dispatch = this._store.dispatch.bind(this._store);
-        this.getState = this._store.getState.bind(this._store);
+    }
+
+    /**
+     * @param {Object} action
+     * @return {*}
+     */
+    dispatch(action) {
+        let result = this._store.dispatch.apply(this._store, arguments);
+        let state = this._store.getState();
+
+        this.emit('*', action, state);
+        this.emit(action.type, action, state);
+
+        return result;
+    }
+
+    /**
+     * @return {*}
+     */
+    getState() {
+        return this._store.getState.apply(this._store, arguments);
+    }
+
+    /**
+     * @return {*}
+     */
+    subscribe() {
+        return this._store.subscribe.apply(this._store, arguments);
     }
 
     /**
@@ -107,6 +151,36 @@ class Store extends EventEmitter {
     }
 
     /**
+     * @param {function} middleware
+     * @param {number|null} [index]
+     * @returns {Store}
+     */
+    addMiddleware(middleware, index = null) {
+        if (index === null) this._middlewares.push(middleware);
+        else this._middlewares.splice(index, 0, middleware);
+
+        this._middleware = Redux.applyMiddleware(...this._middlewares);
+        this._enhancer = Redux.compose(this._middleware, ...this._enhancers);
+
+        return this;
+    }
+
+    /**
+     * @param {function} enhancer
+     * @param {number|null} [index]
+     * @returns {Store}
+     */
+    addEnhancer(enhancer, index = null) {
+        if (index === null) this._enhancers.push(enhancer);
+        else this._enhancers.splice(index, 0, enhancer);
+
+        this._middleware = Redux.applyMiddleware(...this._middlewares);
+        this._enhancer = Redux.compose(this._middleware, ...this._enhancers);
+
+        return this;
+    }
+
+    /**
      * @param {Object} state
      * @param {Object} action
      * @param {Object} action.type
@@ -147,13 +221,6 @@ class Store extends EventEmitter {
      */
     get state() {
         return this._store.getState();
-    }
-
-    /**
-     * @returns {Object}
-     */
-    get reduxStore() {
-        return this._store;
     }
 }
 

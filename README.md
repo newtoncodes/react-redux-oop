@@ -2,6 +2,8 @@
 
 OOP implementation of redux and react.
 
+**Moving to 2.0.x, docs will change soon.**
+
 ## Motivation
 
 Functional programming is very popular right now among web and mobile frontend developers. It's a cool way of doing things but in my opinion it's never black and white. It's a good paradigm and developers can learn a hell lot out of it but I personally don't like they apps are being organized. I just like many developers don't like plain functions in hundreds lowercase files. I like the class structure, because it eases reading and understanding the code a lot. I believe this implementation of redux and react can be helpful for bigger applications.
