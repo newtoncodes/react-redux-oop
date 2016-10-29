@@ -50,6 +50,12 @@ class Store extends EventEmitter {
         this._reducers = {};
 
         /**
+         * @type {Object.<string,function>}
+         * @private
+         */
+        this._asyncActions = {};
+
+        /**
          * @type {Object}
          * @private
          */
@@ -67,6 +73,7 @@ class Store extends EventEmitter {
         this._store = Redux.createStore(this._reducer.bind(this), this._initialState, this._enhancer);
     }
 
+    //noinspection InfiniteRecursionJS
     /**
      * @param {string} [type]
      * @param {Object} action
@@ -81,6 +88,29 @@ class Store extends EventEmitter {
         } else {
             action = Object.assign({}, action);
             action.type = type;
+        }
+
+        if (this._asyncActions.hasOwnProperty(type)) {
+            let fn = this._asyncActions[type];
+
+            let result = this.dispatch(type + '_START', action);
+            let progressCache = 0;
+
+            fn(action, (error, result, progress) => {
+                if (typeof error === 'undefined') error = null;
+                if (typeof result === 'undefined') result = null;
+
+                if (typeof progress === 'number' && progress !== 100) {
+                    progressCache = progress;
+                    return this.dispatch(type + '_PROGRESS', {error, result, progress});
+                }
+
+                if (!error && progressCache < 100 && !progress) progress = 100;
+
+                return this.dispatch(type + '_END', {error, result, progress});
+            });
+
+            return result;
         }
 
         let result = this._store.dispatch(action);
@@ -174,6 +204,21 @@ class Store extends EventEmitter {
                 });
             });
         });
+    }
+
+    /**
+     * @param {Object.<string,function>} actions
+     */
+    addAsyncActions(actions) {
+        Object.keys(actions).forEach(name => this._asyncActions[name] = actions[name]);
+    }
+
+    /**
+     * @param {Object.<string,function>|Array.<string>} actions
+     */
+    removeAsyncActions(actions) {
+        if (Array.isArray(actions)) actions.forEach(name => delete this._asyncActions[name]);
+        else Object.keys(actions).forEach(name => delete this._asyncActions[name]);
     }
 
     /**
