@@ -1,7 +1,7 @@
 {
   "name": "react-redux-oop",
   "description": "An OOP implementation of redux and react.",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "main": "./es5/index.js",
   "scripts": {
     "build:es5": "babel src --out-dir es5",

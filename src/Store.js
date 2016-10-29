@@ -68,17 +68,26 @@ class Store extends EventEmitter {
     }
 
     /**
+     * @param {string} [type]
      * @param {Object} action
      * @return {*}
      */
-    dispatch(action) {
+    dispatch(type, action) {
         if (!this._store) throw new Error('Store is not initiated yet. You cannot dispatch actions before calling init.');
+
+        if (arguments.length === 1) {
+            action = arguments[0];
+            type = action.type;
+        } else {
+            action = Object.assign({}, action);
+            action.type = type;
+        }
 
         let result = this._store.dispatch.apply(this._store, arguments);
         let state = this._store.getState();
 
         this.emit('*', action, state);
-        this.emit(action.type, action, state);
+        this.emit(type, action, state);
 
         return result;
     }
