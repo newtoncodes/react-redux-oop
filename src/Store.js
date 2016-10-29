@@ -83,7 +83,7 @@ class Store extends EventEmitter {
             action.type = type;
         }
 
-        let result = this._store.dispatch.apply(this._store, arguments);
+        let result = this._store.dispatch(action);
         let state = this._store.getState();
 
         this.emit('*', action, state);
