@@ -66,6 +66,7 @@ class App {
      */
     configure(state = {}) {
         this._store = this._createStore(state);
+        this._store.init();
 
         return this;
     }

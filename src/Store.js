@@ -53,7 +53,18 @@ class Store extends EventEmitter {
          * @type {Object}
          * @private
          */
-        this._store = Redux.createStore(this._reducer.bind(this), Immutable(state || {}), this._enhancer);
+        this._store = null;
+
+        this._initialState = Immutable(state || {});
+    }
+
+    /**
+     * Init store. after this you can't add middlewares and enhancers.
+     */
+    init() {
+        if (this._store) throw new Error('Store is already initiated, you cannot initiate it twice.');
+
+        this._store = Redux.createStore(this._reducer.bind(this), this._initialState, this._enhancer);
     }
 
     /**
@@ -61,6 +72,8 @@ class Store extends EventEmitter {
      * @return {*}
      */
     dispatch(action) {
+        if (!this._store) throw new Error('Store is not initiated yet. You cannot dispatch actions before calling init.');
+
         let result = this._store.dispatch.apply(this._store, arguments);
         let state = this._store.getState();
 
@@ -74,6 +87,8 @@ class Store extends EventEmitter {
      * @return {*}
      */
     getState() {
+        if (!this._store) throw new Error('Store is not initiated yet. You cannot get state before calling init.');
+
         return this._store.getState.apply(this._store, arguments);
     }
 
@@ -81,6 +96,8 @@ class Store extends EventEmitter {
      * @return {*}
      */
     subscribe() {
+        if (!this._store) throw new Error('Store is not initiated yet. You cannot subscribe before calling init.');
+
         return this._store.subscribe.apply(this._store, arguments);
     }
 
@@ -156,6 +173,8 @@ class Store extends EventEmitter {
      * @returns {Store}
      */
     addMiddleware(middleware, index = null) {
+        if (this._store) throw new Error('Store is already initiated, you cannot add middleware.');
+
         if (index === null) this._middlewares.push(middleware);
         else this._middlewares.splice(index, 0, middleware);
 
@@ -171,6 +190,8 @@ class Store extends EventEmitter {
      * @returns {Store}
      */
     addEnhancer(enhancer, index = null) {
+        if (this._store) throw new Error('Store is already initiated, you cannot add enhancers.');
+
         if (index === null) this._enhancers.push(enhancer);
         else this._enhancers.splice(index, 0, enhancer);
 
@@ -220,6 +241,8 @@ class Store extends EventEmitter {
      * @returns {*}
      */
     get state() {
+        if (!this._store) throw new Error('Store is not initiated yet. You cannot get state before calling init.');
+
         return this._store.getState();
     }
 }
