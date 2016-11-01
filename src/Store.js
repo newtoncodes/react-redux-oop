@@ -251,7 +251,7 @@ class Store extends EventEmitter {
         if (reducers) state = this._reduce(reducers, state, action);
 
         this.emit('*', action, state);
-        this.emit(type, action, state);
+        this.emit(action.type, action, state);
 
         return state;
     }
