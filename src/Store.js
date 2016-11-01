@@ -53,7 +53,7 @@ class Store extends EventEmitter {
          * @type {Object.<string,function>}
          * @private
          */
-        this._asyncActions = {};
+        this._thunkActions = {};
 
         /**
          * @type {Object}
@@ -62,6 +62,9 @@ class Store extends EventEmitter {
         this._store = null;
 
         this._initialState = Immutable(state || {});
+
+        this.dispatch = this.dispatch.bind(this);
+        this.getState = this.getState.bind(this);
     }
 
     /**
@@ -76,50 +79,29 @@ class Store extends EventEmitter {
     //noinspection InfiniteRecursionJS
     /**
      * @param {string} [type]
-     * @param {Object} action
+     * @param {Object} payload
      * @return {*}
      */
-    dispatch(type, action) {
+    dispatch(type, payload) {
         if (!this._store) throw new Error('Store is not initiated yet. You cannot dispatch actions before calling init.');
 
+        let action = null;
+
         if (arguments.length === 1) {
-            action = arguments[0];
-            type = action.type;
+            if (typeof type === 'string') action = {type};
+            else action = arguments[0];
         } else {
-            action = Object.assign({}, action);
-            action.type = type;
+            action = {type, payload};
         }
 
-        if (this._asyncActions.hasOwnProperty(type)) {
-            let fn = this._asyncActions[type];
+        if (!action) throw new Error('Invalid dispatch arguments.');
+        if (typeof action.type !== 'string') throw new Error('Actions must have a type and it must be a string.');
 
-            let result = this.dispatch(type + '_START', action);
-            let progressCache = 0;
-
-            fn(action, (error, result, progress) => {
-                if (typeof error === 'undefined') error = null;
-                if (typeof result === 'undefined') result = null;
-
-                if (typeof progress === 'number' && progress !== 100) {
-                    progressCache = progress;
-                    return this.dispatch(type + '_PROGRESS', {error, result, progress});
-                }
-
-                if (!error && progressCache < 100 && !progress) progress = 100;
-
-                return this.dispatch(type + '_END', {error, result, progress});
-            });
-
-            return result;
+        if (this._thunkActions.hasOwnProperty(type)) {
+            return this._thunkActions[type](action, this.dispatch, this.getState);
         }
 
-        let result = this._store.dispatch(action);
-        let state = this._store.getState();
-
-        this.emit('*', action, state);
-        this.emit(type, action, state);
-
-        return result;
+        return this._store.dispatch(action);
     }
 
     /**
@@ -209,16 +191,16 @@ class Store extends EventEmitter {
     /**
      * @param {Object.<string,function>} actions
      */
-    addAsyncActions(actions) {
-        Object.keys(actions).forEach(name => this._asyncActions[name] = actions[name]);
+    addThunkActions(actions) {
+        Object.keys(actions).forEach(type => this._thunkActions[type] = actions[type]);
     }
 
     /**
      * @param {Object.<string,function>|Array.<string>} actions
      */
-    removeAsyncActions(actions) {
-        if (Array.isArray(actions)) actions.forEach(name => delete this._asyncActions[name]);
-        else Object.keys(actions).forEach(name => delete this._asyncActions[name]);
+    removeThunkActions(actions) {
+        if (Array.isArray(actions)) actions.forEach(type => delete this._thunkActions[type]);
+        else Object.keys(actions).forEach(type => delete this._thunkActions[type]);
     }
 
     /**
@@ -262,13 +244,14 @@ class Store extends EventEmitter {
      * @private
      */
     _reducer(state, action) {
-        this.emit('action', action);
-
         let reducers = this._reducers['*'];
         if (reducers) state = this._reduce(reducers, state, action);
 
         reducers = this._reducers[action.type];
         if (reducers) state = this._reduce(reducers, state, action);
+
+        this.emit('*', action, state);
+        this.emit(type, action, state);
 
         return state;
     }
