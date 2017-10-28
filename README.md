@@ -178,7 +178,7 @@ class TodoContainer extends Container {
     // Actions can be defined this way:
     actions = {
         todo: new TodoController(),
-        another: new AnotherConroller();
+        another: new AnotherController();
     }
     
     // or this way:
