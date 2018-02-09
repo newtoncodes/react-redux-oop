@@ -129,7 +129,7 @@ class Store extends EventEmitter {
      */
     addReducer(action, path, reducer) {
         if (arguments.length === 2) {
-            reducer = arguments[2];
+            reducer = arguments[1];
             path = '';
         }
 
@@ -147,7 +147,7 @@ class Store extends EventEmitter {
      */
     removeReducer(action, path, reducer) {
         if (arguments.length === 2) {
-            reducer = arguments[2];
+            reducer = arguments[1];
             path = '';
         }
 
